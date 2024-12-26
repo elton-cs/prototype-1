@@ -9,9 +9,12 @@
     cairo,
   } from "starknet";
   import { onMount } from "svelte";
+  import Controller from "@cartridge/controller";
+
+  const rpcUrl = "https://api.cartridge.gg/x/tenpercent/katana";
 
   const providerKatanaDev = new RpcProvider({
-    nodeUrl: "https://api.cartridge.gg/x/tenpercent/katana",
+    nodeUrl: rpcUrl,
   });
 
   const userPK1 =
@@ -26,12 +29,18 @@
   //   "0x13d9ee239f33fea4f8785b9e3870ade909e20a9599ae7cd62c1c292b73af1b7";
   // const acc2 = new Account(providerKatanaDev, userAddr2, userPK2);
 
+  const controller = new Controller({ rpc: rpcUrl });
+  let controllerUsername: string | undefined = $state(undefined);
+  let controllerAccount: Controller | undefined = $state(undefined);
+  let loading: boolean = $state(false);
+
   let updatedPoints: BigInt = $state(0n);
 
   const mainContractAddr =
     "0x5fe3cd9b8a92c16fee81e08579cc87c1328aa9a375b7d1f472ee183af4e12b8";
   let mainContractClass: any;
   let mainContract: Contract;
+
   onMount(async () => {
     mainContractClass = await providerKatanaDev.getClassAt(mainContractAddr);
     mainContract = new Contract(mainContractClass.abi, mainContractAddr, acc1);
@@ -39,11 +48,35 @@
     const connectedAddress = acc1.address;
     console.log(`Account ${connectedAddress}: Connected to main contract`);
     updatedPoints = await mainContract.get_points(connectedAddress);
+
+    if (await controller.probe()) {
+      // auto connect
+      await connectController();
+    }
+    loading = false;
   });
 
   let pointsAsUSD: string = $derived(
     (Number(updatedPoints) / 1000000).toFixed(2),
   );
+
+  async function connectController() {
+    try {
+      const res = await controller.connect();
+      if (res) {
+        controllerAccount = controller;
+        controllerUsername = await controller.username();
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  function disconnectController() {
+    controller.disconnect();
+    controllerAccount = undefined;
+    controllerUsername = undefined;
+  }
 
   async function startGame() {
     const t1 = await mainContract.start_game();
@@ -74,6 +107,16 @@
 
 <main>
   <div>
+    <div>
+      {#if loading}
+        <p>Loading</p>
+      {:else if controllerAccount}
+        <p>Welcome back {controllerUsername}!</p>
+        <button onclick={disconnectController}>Disconnect</button>
+      {:else}
+        <button onclick={connectController}>Connect</button>
+      {/if}
+    </div>
     <h1>{pointsAsUSD} $FAKE</h1>
     <div>
       <button onclick={startGame}>Start Game</button>
