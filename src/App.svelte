@@ -234,10 +234,12 @@
       </div>
 
       <style>
+        /* Mobile first approach */
         .trading-platform {
+          width: 95%;
           max-width: 1200px;
           margin: 0 auto;
-          padding: 2rem;
+          padding: 1rem;
           background: linear-gradient(145deg, #2d1f3d, #1a1a1a);
           border-radius: 12px;
           color: #fff;
@@ -245,47 +247,179 @@
         }
 
         .header {
-          padding: 1rem;
+          padding: 0.8rem;
           border-bottom: 1px solid #4a3664;
-          margin-bottom: 2rem;
+          margin-bottom: 1.5rem;
         }
 
         .loading {
           display: flex;
           align-items: center;
-          gap: 1rem;
+          gap: 0.8rem;
         }
 
         .loader {
-          width: 20px;
-          height: 20px;
-          border: 3px solid #4a3664;
-          border-top: 3px solid #ffd700;
+          width: 16px;
+          height: 16px;
+          border: 2px solid #4a3664;
+          border-top: 2px solid #ffd700;
           border-radius: 50%;
           animation: spin 1s linear infinite;
         }
 
         .user-info {
           display: flex;
-          justify-content: space-between;
+          flex-direction: column;
+          gap: 1rem;
           align-items: center;
         }
 
         .welcome {
-          font-size: 1.2rem;
+          font-size: 1rem;
           color: #ffd700;
           text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+          text-align: center;
         }
 
         .connect-btn,
         .disconnect-btn {
+          width: 100%;
           background: linear-gradient(145deg, #4a3664, #2d1f3d);
           color: #fff;
           border: none;
-          padding: 0.8rem 1.5rem;
+          padding: 0.8rem 1rem;
           border-radius: 6px;
           cursor: pointer;
           transition: all 0.3s;
+        }
+
+        .trading-container {
+          padding: 1rem;
+        }
+
+        .balance-card {
+          background: linear-gradient(145deg, #4a3664, #2d1f3d);
+          padding: 1.5rem;
+          border-radius: 8px;
+          margin-bottom: 1.5rem;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .balance {
+          font-size: 2rem;
+          margin: 0.5rem 0;
+          color: #ffd700;
+          text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+          transition: all 0.3s ease;
+          text-align: center;
+        }
+
+        .currency {
+          font-size: 1.2rem;
+          color: #888;
+        }
+
+        .controls {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .control-btn {
+          width: 100%;
+          padding: 0.8rem;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          font-weight: bold;
+          transition: all 0.3s;
+        }
+
+        .trading-actions {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .trade-btn {
+          width: 100%;
+          padding: 1.2rem;
+          border: none;
+          border-radius: 8px;
+          font-size: 1.1rem;
+          font-weight: bold;
+          cursor: pointer;
+          transition: all 0.3s;
+        }
+
+        /* Tablet styles */
+        @media (min-width: 768px) {
+          .trading-platform {
+            padding: 1.5rem;
+          }
+
+          .user-info {
+            flex-direction: row;
+            justify-content: space-between;
+          }
+
+          .welcome {
+            font-size: 1.1rem;
+          }
+
+          .connect-btn,
+          .disconnect-btn {
+            width: auto;
+          }
+
+          .controls {
+            flex-direction: row;
+            justify-content: center;
+          }
+
+          .control-btn {
+            width: auto;
+          }
+
+          .trading-actions {
+            flex-direction: row;
+            justify-content: center;
+            gap: 2rem;
+          }
+
+          .trade-btn {
+            width: 200px;
+          }
+
+          .balance {
+            font-size: 2.5rem;
+          }
+        }
+
+        /* Desktop styles */
+        @media (min-width: 1024px) {
+          .trading-platform {
+            padding: 2rem;
+          }
+
+          .welcome {
+            font-size: 1.2rem;
+          }
+
+          .balance {
+            font-size: 3rem;
+          }
+
+          .trade-btn {
+            width: 250px;
+            padding: 1.5rem 3rem;
+            font-size: 1.2rem;
+          }
+
+          .control-btn {
+            padding: 0.8rem 1.5rem;
+          }
         }
 
         .connect-btn:hover {
@@ -297,31 +431,6 @@
         .disconnect-btn:hover {
           background: linear-gradient(145deg, #ff4444, #cc0000);
           transform: translateY(-2px);
-        }
-
-        .trading-container {
-          padding: 2rem;
-        }
-
-        .balance-card {
-          background: linear-gradient(145deg, #4a3664, #2d1f3d);
-          padding: 2rem;
-          border-radius: 8px;
-          margin-bottom: 2rem;
-          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-        }
-
-        .label {
-          color: #ffd700;
-          font-size: 0.9rem;
-        }
-
-        .balance {
-          font-size: 3rem;
-          margin: 1rem 0;
-          color: #ffd700;
-          text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-          transition: all 0.3s ease;
         }
 
         .balance.up {
@@ -336,26 +445,6 @@
           animation: pulse-red 1s ease;
         }
 
-        .currency {
-          font-size: 1.5rem;
-          color: #888;
-        }
-
-        .controls {
-          display: flex;
-          gap: 1rem;
-          margin-bottom: 2rem;
-        }
-
-        .control-btn {
-          padding: 0.8rem 1.5rem;
-          border: none;
-          border-radius: 6px;
-          cursor: pointer;
-          font-weight: bold;
-          transition: all 0.3s;
-        }
-
         .start {
           background: linear-gradient(145deg, #ffd700, #ffb700);
           color: #1a1a1a;
@@ -364,25 +453,6 @@
         .reset {
           background: linear-gradient(145deg, #4a3664, #2d1f3d);
           color: #fff;
-        }
-
-        .trading-actions {
-          display: flex;
-          gap: 2rem;
-          justify-content: center;
-        }
-
-        .trade-btn {
-          padding: 1.5rem 3rem;
-          border: none;
-          border-radius: 8px;
-          font-size: 1.2rem;
-          font-weight: bold;
-          cursor: pointer;
-          transition: all 0.3s;
-          width: 250px;
-          position: relative;
-          overflow: hidden;
         }
 
         .short {
