@@ -2,6 +2,8 @@
   import { RpcProvider, Contract, AccountInterface } from "starknet";
   import { onMount } from "svelte";
   import Controller, { type SessionPolicies } from "@cartridge/controller";
+  import { fade, fly } from "svelte/transition";
+  import { spring } from "svelte/motion";
 
   const rpcUrl = "https://api.cartridge.gg/x/tenpercent/katana";
   const providerKatanaDev = new RpcProvider({
@@ -46,9 +48,11 @@
 
   let transactionList: string[] = $state([]);
   let updatedPoints: BigInt = $state(0n);
+  let previousPoints: BigInt = $state(0n);
   let pointsAsUSD: string = $derived(
     (Number(updatedPoints) / 1000000).toFixed(2),
   );
+  let priceDirection: "up" | "down" | null = $state(null);
 
   onMount(async () => {
     mainContractClass = await providerKatanaDev.getClassAt(mainContractAddr);
@@ -70,7 +74,20 @@
     if (executeAccount && mainContract) {
       const latestTx = transactionList[transactionList.length - 1];
       const tx = await providerKatanaDev.getTransaction(latestTx);
+      previousPoints = updatedPoints;
       updatedPoints = await mainContract.get_points(executeAccount.address);
+
+      // Set price direction for animation
+      if (updatedPoints > previousPoints) {
+        priceDirection = "up";
+      } else if (updatedPoints < previousPoints) {
+        priceDirection = "down";
+      }
+
+      // Reset direction after animation
+      setTimeout(() => {
+        priceDirection = null;
+      }, 1000);
     }
   }
 
@@ -90,6 +107,7 @@
         if (executeAccount) {
           mainContract.connect(executeAccount);
           updatedPoints = await mainContract.get_points(executeAccount.address);
+          previousPoints = updatedPoints;
         }
       }
     } catch (e) {
@@ -158,11 +176,13 @@
       {#if loading}
         <div class="loading">
           <span class="loader"></span>
-          <p>Loading platform...</p>
+          <p>Loading casino...</p>
         </div>
       {:else if connectedController}
         <div class="user-info">
-          <span class="welcome">Welcome, {controllerUsername}</span>
+          <span class="welcome"
+            >🎰 Welcome High Roller, {controllerUsername}</span
+          >
           <button class="disconnect-btn" onclick={disconnectController}>
             <i class="fas fa-sign-out-alt"></i>
             Disconnect
@@ -170,8 +190,8 @@
         </div>
       {:else}
         <button class="connect-btn" onclick={connectController}>
-          <i class="fas fa-wallet"></i>
-          Connect Wallet
+          <i class="fas fa-coins"></i>
+          Buy In
         </button>
       {/if}
     </nav>
@@ -180,20 +200,23 @@
       <div class="trading-container">
         <div class="account-info">
           <div class="balance-card">
-            <span class="label">Available Balance</span>
-            <h1 class="balance">
+            <h1
+              class="balance"
+              class:up={priceDirection === "up"}
+              class:down={priceDirection === "down"}
+            >
               {pointsAsUSD} <span class="currency">$FAKE</span>
             </h1>
           </div>
 
           <div class="controls">
             <button class="control-btn start" onclick={executeStartGame}>
-              <i class="fas fa-play"></i>
-              Start Trading
+              <i class="fas fa-dice"></i>
+              New Game
             </button>
             <button class="control-btn reset" onclick={executeResetGame}>
               <i class="fas fa-redo"></i>
-              Reset
+              Reset Game
             </button>
           </div>
         </div>
@@ -201,11 +224,11 @@
         <div class="trading-actions">
           <button class="trade-btn short" onclick={() => executeGamble(false)}>
             <i class="fas fa-arrow-down"></i>
-            Short Position
+            Short
           </button>
           <button class="trade-btn long" onclick={() => executeGamble(true)}>
             <i class="fas fa-arrow-up"></i>
-            Long Position
+            Long
           </button>
         </div>
       </div>
@@ -215,14 +238,15 @@
           max-width: 1200px;
           margin: 0 auto;
           padding: 2rem;
-          background: #1a1a1a;
+          background: linear-gradient(145deg, #2d1f3d, #1a1a1a);
           border-radius: 12px;
           color: #fff;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
 
         .header {
           padding: 1rem;
-          border-bottom: 1px solid #333;
+          border-bottom: 1px solid #4a3664;
           margin-bottom: 2rem;
         }
 
@@ -235,8 +259,8 @@
         .loader {
           width: 20px;
           height: 20px;
-          border: 3px solid #333;
-          border-top: 3px solid #fff;
+          border: 3px solid #4a3664;
+          border-top: 3px solid #ffd700;
           border-radius: 50%;
           animation: spin 1s linear infinite;
         }
@@ -249,27 +273,30 @@
 
         .welcome {
           font-size: 1.2rem;
-          color: #00ff88;
+          color: #ffd700;
+          text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
 
         .connect-btn,
         .disconnect-btn {
-          background: #2d2d2d;
+          background: linear-gradient(145deg, #4a3664, #2d1f3d);
           color: #fff;
           border: none;
           padding: 0.8rem 1.5rem;
           border-radius: 6px;
           cursor: pointer;
-          transition: all 0.2s;
+          transition: all 0.3s;
         }
 
         .connect-btn:hover {
-          background: #00ff88;
+          background: linear-gradient(145deg, #ffd700, #ffb700);
           color: #1a1a1a;
+          transform: translateY(-2px);
         }
 
         .disconnect-btn:hover {
-          background: #ff4444;
+          background: linear-gradient(145deg, #ff4444, #cc0000);
+          transform: translateY(-2px);
         }
 
         .trading-container {
@@ -277,21 +304,36 @@
         }
 
         .balance-card {
-          background: #2d2d2d;
+          background: linear-gradient(145deg, #4a3664, #2d1f3d);
           padding: 2rem;
           border-radius: 8px;
           margin-bottom: 2rem;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
         }
 
         .label {
-          color: #888;
+          color: #ffd700;
           font-size: 0.9rem;
         }
 
         .balance {
           font-size: 3rem;
           margin: 1rem 0;
+          color: #ffd700;
+          text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+          transition: all 0.3s ease;
+        }
+
+        .balance.up {
           color: #00ff88;
+          transform: scale(1.05);
+          animation: pulse-green 1s ease;
+        }
+
+        .balance.down {
+          color: #ff4444;
+          transform: scale(0.95);
+          animation: pulse-red 1s ease;
         }
 
         .currency {
@@ -311,16 +353,16 @@
           border-radius: 6px;
           cursor: pointer;
           font-weight: bold;
-          transition: all 0.2s;
+          transition: all 0.3s;
         }
 
         .start {
-          background: #00ff88;
+          background: linear-gradient(145deg, #ffd700, #ffb700);
           color: #1a1a1a;
         }
 
         .reset {
-          background: #2d2d2d;
+          background: linear-gradient(145deg, #4a3664, #2d1f3d);
           color: #fff;
         }
 
@@ -337,23 +379,29 @@
           font-size: 1.2rem;
           font-weight: bold;
           cursor: pointer;
-          transition: all 0.2s;
+          transition: all 0.3s;
           width: 250px;
+          position: relative;
+          overflow: hidden;
         }
 
         .short {
-          background: #ff4444;
+          background: linear-gradient(145deg, #ff4444, #cc0000);
           color: #fff;
         }
 
         .long {
-          background: #00ff88;
+          background: linear-gradient(145deg, #00ff88, #00cc66);
           color: #1a1a1a;
         }
 
         .trade-btn:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .trade-btn:active {
           transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         @keyframes spin {
@@ -362,6 +410,30 @@
           }
           100% {
             transform: rotate(360deg);
+          }
+        }
+
+        @keyframes pulse-green {
+          0% {
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0);
+          }
+          50% {
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+          }
+          100% {
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0);
+          }
+        }
+
+        @keyframes pulse-red {
+          0% {
+            text-shadow: 0 0 10px rgba(255, 68, 68, 0);
+          }
+          50% {
+            text-shadow: 0 0 20px rgba(255, 68, 68, 0.5);
+          }
+          100% {
+            text-shadow: 0 0 10px rgba(255, 68, 68, 0);
           }
         }
       </style>
