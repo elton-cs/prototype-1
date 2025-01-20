@@ -9,13 +9,13 @@
   });
 
   const actionsContractAddr =
-    "0x0755a685bf4b9aa3527b675781c94f44139f730889ca167779ac3f0dd07a6b6e";
+    "0x017cb931430270e7496744f4843efbebe33ea9c1be49791e985fb837825db58e";
   let mainContractClass: any;
   let mainContract: Contract;
 
   const policies: SessionPolicies = {
     contracts: {
-      "0x04c45dc7c2bdadba03d4ca3e5897c107427ed95f82a467d72c273c88dc48a21a": {
+      "0x017cb931430270e7496744f4843efbebe33ea9c1be49791e985fb837825db58e": {
         name: "Main",
         methods: [
           {
