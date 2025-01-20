@@ -99,7 +99,7 @@
     // Set up interval for updating tick
     const interval = setInterval(() => {
       if (executeAccount && mainContract) {
-        // void updateGameState();
+        void updateGameState();
       }
     }, 100);
 
@@ -149,7 +149,6 @@
         myWalletAddressFelt,
       ]);
       let result = await mainContract.get_game_updates(myWalletAddress);
-      console.log(result);
       squareOneLength = result[0];
       squareTwoLength = result[1];
       bombaTick = result[2];
@@ -368,19 +367,42 @@
 
     <div class="game-controls">
       <!-- <button onclick={executeStartGame}>Start Game</button> -->
-      <button onclick={flipSquare}>Flip Square</button>
     </div>
     <div class="game-controls">
       <button onclick={startGame}>Start Game</button>
       <button onclick={endGame}>End Game</button>
 
-      <button onclick={updateGameState}>Update Game State</button>
+      <!-- <button onclick={updateGameState}>Update Game State</button> -->
     </div>
 
     <p class="tick-display">Bomba Tick: {bombaTick}</p>
-    <p class="tick-display">Square One Length: {squareOneLength}</p>
-    <p class="tick-display">Square Two Length: {squareTwoLength}</p>
-    <p class="tick-display">Player Square: {playerSquare}</p>
+    <div
+      class="square-container"
+      style="display: flex; justify-content: center; gap: 2rem;"
+    >
+      <div
+        class="square-box"
+        style="background: #4f46e5; padding: 1.5rem; border-radius: 0.5rem; color: white; text-align: center;"
+      >
+        <div class="square-label">Square One</div>
+        <div class="square-length" style="font-size: 2rem; font-weight: bold;">
+          {squareOneLength}
+        </div>
+      </div>
+      <div
+        class="square-box"
+        style="background: #7c3aed; padding: 1.5rem; border-radius: 0.5rem; color: white; text-align: center;"
+      >
+        <div class="square-label">Square Two</div>
+        <div class="square-length" style="font-size: 2rem; font-weight: bold;">
+          {squareTwoLength}
+        </div>
+      </div>
+    </div>
+    <div class="game-controls">
+      <button onclick={flipSquare}>Flip Square</button>
+    </div>
+    <p class="tick-display">My Square: {playerSquare}</p>
   </div>
 </main>
 
