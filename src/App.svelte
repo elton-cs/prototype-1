@@ -9,7 +9,7 @@
   });
 
   const actionsContractAddr =
-    "0x04c45dc7c2bdadba03d4ca3e5897c107427ed95f82a467d72c273c88dc48a21a";
+    "0x0755a685bf4b9aa3527b675781c94f44139f730889ca167779ac3f0dd07a6b6e";
   let mainContractClass: any;
   let mainContract: Contract;
 
