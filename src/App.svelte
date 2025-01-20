@@ -382,7 +382,9 @@
     >
       <div
         class="square-box"
-        style="background: #4f46e5; padding: 1.5rem; border-radius: 0.5rem; color: white; text-align: center;"
+        style="background: {playerSquare === 1n
+          ? '#22c55e'
+          : '#4f46e5'}; padding: 1.5rem; border-radius: 0.5rem; color: white; text-align: center;"
       >
         <div class="square-label">Square One</div>
         <div class="square-length" style="font-size: 2rem; font-weight: bold;">
@@ -391,7 +393,9 @@
       </div>
       <div
         class="square-box"
-        style="background: #7c3aed; padding: 1.5rem; border-radius: 0.5rem; color: white; text-align: center;"
+        style="background: {playerSquare === 2n
+          ? '#22c55e'
+          : '#7c3aed'}; padding: 1.5rem; border-radius: 0.5rem; color: white; text-align: center;"
       >
         <div class="square-label">Square Two</div>
         <div class="square-length" style="font-size: 2rem; font-weight: bold;">
