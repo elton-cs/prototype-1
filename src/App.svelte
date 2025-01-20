@@ -3,7 +3,7 @@
   import { onMount } from "svelte";
   import Controller, { type SessionPolicies } from "@cartridge/controller";
 
-  const rpcUrl = "https://api.cartridge.gg/x/squares/katana";
+  const rpcUrl = "https://api.cartridge.gg/x/squares2/katana";
   const providerKatanaDev = new RpcProvider({
     nodeUrl: rpcUrl,
   });
