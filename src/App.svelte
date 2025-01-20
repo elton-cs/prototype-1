@@ -65,6 +65,7 @@
   let loading: boolean = $state(false);
 
   let myWalletAddress: string | undefined = $state(undefined);
+  let myWalletAddressFelt: BigInt | undefined = $state(undefined);
 
   let transactionList: string[] = $state([]);
   // let updatedPoints: BigInt = $state(0n);
@@ -88,9 +89,12 @@
     if (await controller.probe()) {
       // auto connect
       await connectController();
+      if (executeAccount) {
+        myWalletAddress = executeAccount.address;
+        myWalletAddressFelt = BigInt(myWalletAddress);
+      }
     }
     loading = false;
-    myWalletAddress = executeAccount?.address;
 
     // Set up interval for updating tick
     const interval = setInterval(() => {
@@ -140,9 +144,11 @@
   // }
 
   async function updateGameState() {
-    if (executeAccount && mainContract) {
-      const myCall = mainContract.populate("get_game_updates", []);
-      let result = await mainContract.get_game_updates();
+    if (executeAccount && mainContract && myWalletAddressFelt) {
+      const myCall = mainContract.populate("get_game_updates", [
+        myWalletAddressFelt,
+      ]);
+      let result = await mainContract.get_game_updates(myWalletAddress);
       console.log(result);
       squareOneLength = result[0];
       squareTwoLength = result[1];
@@ -352,6 +358,11 @@
         <button class="connect-btn" onclick={disconnectController}>
           Disconnect ({controllerUsername})
         </button>
+        <div class="wallet-address">
+          {myWalletAddress
+            ? myWalletAddress.slice(0, 6) + "..." + myWalletAddress.slice(-4)
+            : ""}
+        </div>
       {/if}
     </div>
 
@@ -393,6 +404,10 @@
     top: 1rem;
     right: 1rem;
     z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
   }
 
   .game-controls {
@@ -421,6 +436,12 @@
     text-align: center;
     margin-top: 2rem;
     font-size: 1.2rem;
+  }
+
+  .wallet-address {
+    color: #666;
+    font-size: 0.875rem;
+    font-family: monospace;
   }
 
   @media (max-width: 640px) {
