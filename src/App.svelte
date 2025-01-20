@@ -68,12 +68,6 @@
   let myWalletAddressFelt: BigInt | undefined = $state(undefined);
 
   let transactionList: string[] = $state([]);
-  // let updatedPoints: BigInt = $state(0n);
-  // let previousPoints: BigInt = $state(0n);
-  // let pointsAsUSD: string = $derived(
-  //   (Number(updatedPoints) / 1000000).toFixed(2),
-  // );
-  // let priceDirection: "up" | "down" | null = $state(null);
 
   let updatedTick: BigInt = $state(0n);
   let previousTick: BigInt = $state(0n);
@@ -106,42 +100,6 @@
     // Clean up interval when component unmounts
     // return () => clearInterval(interval);
   });
-
-  // $effect(() => {
-  //   if (transactionList.length > 0 && executeAccount && mainContract) {
-  //     void updateTick();
-  //   }
-  // }, [transactionList]);
-
-  // async function updatePoints() {
-  //   if (executeAccount && mainContract) {
-  //     const latestTx = transactionList[transactionList.length - 1];
-  //     const tx = await providerKatanaDev.getTransaction(latestTx);
-  //     previousPoints = updatedPoints;
-  //     updatedPoints = await mainContract.get_points(executeAccount.address);
-
-  //     // Set price direction for animation
-  //     if (updatedPoints > previousPoints) {
-  //       priceDirection = "up";
-  //     } else if (updatedPoints < previousPoints) {
-  //       priceDirection = "down";
-  //     }
-
-  //     // Reset direction after animation
-  //     setTimeout(() => {
-  //       priceDirection = null;
-  //     }, 1000);
-  //   }
-  // }
-
-  // async function updateTick() {
-  //   if (executeAccount && mainContract) {
-  //     const latestTx = transactionList[transactionList.length - 1];
-  //     const tx = await providerKatanaDev.getTransaction(latestTx);
-  //     previousTick = updatedTick;
-  //     updatedTick = await mainContract.read_tick();
-  //   }
-  // }
 
   async function updateGameState() {
     if (executeAccount && mainContract && myWalletAddressFelt) {
@@ -234,118 +192,6 @@
       console.log(e);
     }
   }
-
-  // async function executeStartGame() {
-  //   if (!executeAccount) return;
-  //   try {
-  //     const result = await executeAccount.execute([
-  //       {
-  //         contractAddress: actionsContractAddr,
-  //         entrypoint: "start_game",
-  //         calldata: [],
-  //       },
-  //     ]);
-  //     transactionList.push(result.transaction_hash);
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // }
-
-  // async function enterSquareOne() {
-  //   if (!executeAccount) return;
-  //   try {
-  //     const result = await executeAccount.execute([
-  //       {
-  //         contractAddress: actionsContractAddr,
-  //         entrypoint: "enter_square_one",
-  //         calldata: [],
-  //       },
-  //     ]);
-  //     transactionList.push(result.transaction_hash);
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // }
-
-  // async function enterSquareTwo() {
-  //   if (!executeAccount) return;
-  //   try {
-  //     const result = await executeAccount.execute([
-  //       {
-  //         contractAddress: actionsContractAddr,
-  //         entrypoint: "enter_square_two",
-  //         calldata: [],
-  //       },
-  //     ]);
-  //     transactionList.push(result.transaction_hash);
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // }
-
-  // async function exitSquare() {
-  //   if (!executeAccount) return;
-  //   try {
-  //     const result = await executeAccount.execute([
-  //       {
-  //         contractAddress: actionsContractAddr,
-  //         entrypoint: "exit_square",
-  //         calldata: [],
-  //       },
-  //     ]);
-  //     transactionList.push(result.transaction_hash);
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // }
-
-  // async function executeStartGame() {
-  //   if (!executeAccount) return;
-  //   try {
-  //     const result = await executeAccount.execute([
-  //       {
-  //         contractAddress: actionsContractAddr,
-  //         entrypoint: "start_game",
-  //         calldata: [],
-  //       },
-  //     ]);
-  //     transactionList.push(result.transaction_hash);
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // }
-
-  // async function executeGamble(guess: boolean) {
-  //   if (!executeAccount) return;
-  //   try {
-  //     const result = await executeAccount.execute([
-  //       {
-  //         contractAddress: actionsContractAddr,
-  //         entrypoint: "gamble",
-  //         calldata: [guess],
-  //       },
-  //     ]);
-  //     transactionList.push(result.transaction_hash);
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // }
-
-  // async function executeResetGame() {
-  //   if (!executeAccount) return;
-  //   try {
-  //     const result = await executeAccount.execute([
-  //       {
-  //         contractAddress: actionsContractAddr,
-  //         entrypoint: "reset_game",
-  //         calldata: [],
-  //       },
-  //     ]);
-  //     transactionList.push(result.transaction_hash);
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // }
 </script>
 
 <main>
@@ -407,6 +253,13 @@
       <button onclick={flipSquare}>Flip Square</button>
     </div>
     <p class="tick-display">My Square: {playerSquare}</p>
+    {#if bombaTick === 10n}
+      {#if (playerSquare === 1n && squareOneLength <= squareTwoLength) || (playerSquare === 2n && squareTwoLength <= squareOneLength)}
+        <p class="winner-display">You Won! 🎉</p>
+      {:else}
+        <p class="winner-display">You Lost! 😢</p>
+      {/if}
+    {/if}
   </div>
 </main>
 
